@@ -328,6 +328,12 @@ def parse_opts(cmdline_args=None):
         dest="use_text_set_icon",
         help="Use text/letters to represent a card's set instead of the set icon.",
     )
+    group_tab.add_argument(
+        "--use-set-icon",
+        action="store_true",
+        dest="use_set_icon",
+        help="Use set icon instead of a card icon.  Applies to Promo cards.",
+    )
 
     # Expanion Dividers
     group_expansion = parser.add_argument_group(
@@ -344,7 +350,13 @@ def parse_opts(cmdline_args=None):
         "--centre-expansion-dividers",
         action="store_true",
         dest="centre_expansion_dividers",
-        help="Centre the tabs on expansion dividers.",
+        help="Centre the tabs on expansion dividers (same width as dividers.)",
+    )
+    group_expansion.add_argument(
+        "--full-expansion-dividers",
+        action="store_true",
+        dest="full_expansion_dividers",
+        help="Full width expansion dividers.",
     )
     group_expansion.add_argument(
         "--expansion-reset-tabs",
@@ -491,6 +503,11 @@ def parse_opts(cmdline_args=None):
         help="Group all 'Project' cards across all expansions into one divider.",
     )
     group_select.add_argument(
+        "--exclude-ways",
+        action="store_true",
+        help="Group all 'Way' cards across all expansions into one divider.",
+    )
+    group_select.add_argument(
         "--only-type-any",
         "--only-type",
         "--type-any",
@@ -588,6 +605,20 @@ def parse_opts(cmdline_args=None):
         type=float,
         default=0.1,
         help="Width of lines for card outlines and crop marks.",
+    )
+    group_printing.add_argument(
+        "--front-offset",
+        type=float,
+        dest="front_offset",
+        default=0,
+        help="Front page horizontal offset points to shift to the right. Only needed for some printers.",
+    )
+    group_printing.add_argument(
+        "--front-offset-height",
+        type=float,
+        dest="front_offset_height",
+        default=0,
+        help="Front page vertical offset points to shift upward. Only needed for some printers.",
     )
     group_printing.add_argument(
         "--back-offset",
@@ -1415,6 +1446,18 @@ def filter_sort_cards(cards, options):
             old_card_type="Project",
             new_type="Projects",
             new_card_tag="projects",
+            new_cardset_tag="extras",
+        )
+        if options.expansions:
+            options.expansions.append("extras")
+
+    # Combine all Ways across all expansions
+    if options.exclude_ways:
+        cards = combine_cards(
+            cards,
+            old_card_type="Way",
+            new_type="Ways",
+            new_card_tag="ways",
             new_cardset_tag="extras",
         )
         if options.expansions:

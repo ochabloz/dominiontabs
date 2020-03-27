@@ -22,7 +22,7 @@ def rmtestcardb(request):
 
 
 def test_cardread():
-    num_cards_expected = 593
+    num_cards_expected = 664
 
     options = main.parse_opts([])
     options.data_path = "."
@@ -55,6 +55,7 @@ def test_cardread():
         u"promo",
         u"promo-bigbox2-de",
         u"renaissance",
+        u"menagerie",
         u"extras",
         u"animals",
     }
